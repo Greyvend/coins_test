@@ -19,6 +19,6 @@ from payments import views
 
 
 urlpatterns = [
-    url(r'^accounts/$', views.AccountList.as_view()),
-    url(r'^payments/$', views.PaymentList.as_view())
+    url(r'^accounts/$', views.AccountList.as_view(), name='account-list'),
+    url(r'^payments/$', views.PaymentList.as_view(), name='payment-list')
 ]
