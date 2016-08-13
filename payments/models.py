@@ -1,7 +1,6 @@
 """
 Defines models dealing with user accounts and payment transactions.
 """
-
 from django.db import models
 
 
@@ -15,8 +14,8 @@ class Account(models.Model):
 
 
 class Payment(models.Model):
-    from_account = models.ForeignKey(Account)
-    to_account = models.ForeignKey(Account)
+    from_account = models.ForeignKey(Account, related_name='outgoing_payments')
+    to_account = models.ForeignKey(Account, related_name='incoming_payments')
     amount = models.IntegerField()
 
     def __unicode__(self):
