@@ -1,43 +1,34 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from rest_framework import generics
+from rest_framework.renderers import JSONRenderer
+from payments.models import Account, Payment
+from payments.serializers import AccountSerializer, PaymentSerializer
 
 
-@authentication_classes((SignatureAuthentication, ))
-class FactList(generics.ListAPIView):
+class JSONResponse(HttpResponse):
     """
-    List of all `Facts`
+    An HttpResponse that renders its content into JSON.
     """
-    queryset = Fact.objects.all()
-    serializer_class = FactSerializer
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
 
 
-@authentication_classes((SignatureAuthentication, ))
-class FactDetail(generics.RetrieveAPIView):
-    queryset = Fact.objects.all()
-    serializer_class = FactSerializer
+class AccountList(generics.ListAPIView):
+    """
+    List all accounts
+    """
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
 
-    def get_object(self, queryset=None):
-        if not queryset:
-            working_set = self.get_queryset()
-        else:
-            working_set = queryset
-        code = self.kwargs['code']
-        section = self.kwargs['section']
-        return working_set.get(code=code, section__name=section)
 
-    def get(self, request, *args, **kwargs):
-        """
-        One `Fact` from given *section* and *code*
-        ---
-        parameters:
-            - name: section
-              type: string
-              paramType: path
-              required: true
-              description: Name of fact Section
-            - name: code
-              type: integer
-              paramType: path
-              required: true
-              description: Fact code
-        """
-        return super(FactDetail, self).get(request, *args, **kwargs)
+class PaymentList(generics.ListCreateAPIView):
+    """
+    List all payments and allow creating new payments
+    """
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
