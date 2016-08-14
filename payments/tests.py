@@ -143,3 +143,56 @@ class PaymentListTests(APITestCase):
         self.assertEqual(bob_acc.balance, 950)
         alice_acc.refresh_from_db()
         self.assertEqual(alice_acc.balance, 3129)
+
+    def test_post_different_currency_real(self):
+        """
+        Perform POST request to create payment in case users have different
+        currency settings. Verify that balances change appropriately and new
+        payment row is created in DB.
+
+        Note: Test also contains sanity check based on
+        typical disposition on USD to PHP currencies. Need to be adjusted in
+        case of some world economy shenanigans
+        """
+        bob_acc = Account(owner='Bob', currency='USD', balance=1000)
+        bob_acc.save()
+        alice_acc = Account(owner='Alice', currency='PHP', balance=800)
+        alice_acc.save()
+        old_alice_balance = alice_acc.balance
+
+        self.client.post(reverse('payment-list'),
+                         data={'from_account': bob_acc.id,
+                               'to_account': alice_acc.id,
+                               'amount': 50})
+
+        # check that accounts were charged appropriately
+        bob_acc.refresh_from_db()
+        self.assertEqual(bob_acc.balance, 950)
+        alice_acc.refresh_from_db()
+        # verify here that amount loaded is greater than the amount charged,
+        # which is obvious due to USD to PHP conversion rates
+        self.assertTrue(alice_acc.balance - old_alice_balance > 50)
+
+    def test_post_insufficient_balance(self):
+        """
+        Perform POST request with source user lacking money. Nothing should be
+        created, 422 code should be returned.
+        """
+        bob_acc = Account(owner='Bob', currency='USD', balance=5)
+        bob_acc.save()
+        alice_acc = Account(owner='Alice', currency='PHP', balance=800)
+        alice_acc.save()
+
+        response = self.client.post(reverse('payment-list'),
+                                    data={'from_account': bob_acc.id,
+                                          'to_account': alice_acc.id,
+                                          'amount': 50})
+
+        self.assertTrue(response.status_code, 422)
+        # check that Payment model wasn't created
+        self.assertEqual(Payment.objects.all().count(), 0)
+        # finally check that accounts have same balances
+        bob_acc.refresh_from_db()
+        self.assertEqual(bob_acc.balance, 5)
+        alice_acc.refresh_from_db()
+        self.assertEqual(alice_acc.balance, 800)
