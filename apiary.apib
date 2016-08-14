@@ -1,0 +1,62 @@
+FORMAT: 1A
+
+# Disclamer
+This is a Markdown file written in API Blueprint format and is meant to
+be used on apiary.io API docs hosting service.
+
+## API Blueprint
++ [This: Raw API Blueprint](https://raw.github.com/apiaryio/api-blueprint/master/examples/01.%20Simplest%20API.md)
++ [Next: Resource and Actions](02.%20Resource%20and%20Actions.md)
+
+
+# Payments API
+This is an API performing user accounts management as well as payment
+transactions between accounts.
+
+
+# GET /accounts/
+
++ Response 200 (application/json)
+
+    + Attributes (Account)
+        + id : 44 (number) - account id
+
+# Payments collection [/payments/]
+# List all payments [GET]
+
++ Response 200 (application/json)
+
+    + Attributes (array[Payment])
+        + id : 44 (number) - id of newly created payment object
+
+
+# Make a payment [POST]
+This endpoint not only creates payment object in the system but also
+performs money charge from source account and loads them to the destination account.
+In case of insufficient funds `422` error code is returned.
+
++ Request (application/json)
+
+    + Attributes (Payment)
+
++ Response 200 (application/json)
+
+    + Attributes (Payment)
+        + id : 44 (number) - id of newly created payment object
+
++ Response 422 (application/json)
+
+    Insufficient funds.
+
+
+# Data structures
+
+## Account
+- owner : Bob (string) - name of the account owner
+- balance : 15600 (number) - amount of available funds
+- currency : USD (string) - ISO 4217 3 letter code
+
+## Payment
+- from_account : 346 (number, required) - id of account to charge
+- to_account : 116 (number, required) - id of account to load
+- amount : 15600 (number, required) - amount of available funds
