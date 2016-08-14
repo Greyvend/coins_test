@@ -1,17 +1,11 @@
 FORMAT: 1A
 
-# Disclamer
-This is a Markdown file written in API Blueprint format and is meant to
-be used on apiary.io API docs hosting service.
-
-## API Blueprint
-+ [This: Raw API Blueprint](https://raw.github.com/apiaryio/api-blueprint/master/examples/01.%20Simplest%20API.md)
-+ [Next: Resource and Actions](02.%20Resource%20and%20Actions.md)
-
-
 # Payments API
-This is an API performing user accounts management as well as payment
-transactions between accounts.
+This is an API performing user accounts management and performing payments.
+
+### Disclamer
+This is a Markdown file written in [API Blueprint](https://apiblueprint.org/) format and is meant to
+be used on apiary.io API docs hosting service.
 
 
 # GET /accounts/
@@ -46,7 +40,7 @@ In case of insufficient funds `422` error code is returned.
 
 + Response 422 (application/json)
 
-    Insufficient funds.
+        Insufficient funds.
 
 
 # Data structures
