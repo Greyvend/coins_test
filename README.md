@@ -14,7 +14,7 @@ This will create a virtual environment, install dependencies, and populate it wi
 $ virtualenv venv -p /usr/bin/python3  #  create virtual environment
 $ source venv/bin/activate             #  activate virtual environment
 $ pip install -r requirements.txt      #  install requirements
-$ DJANGO_SETTINGS_MODULE=coins_test.settings python manage.py runserver  # run development server, immediately available for playing with it
+$ DJANGO_SETTINGS_MODULE=coins_test.settings python manage.py runserver  # run development server
 ```
 
 
